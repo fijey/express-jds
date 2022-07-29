@@ -25,7 +25,13 @@ module.exports = function (app) {
     app.get('/api/fetch-data', 
     [verifyJwtTokenController.verifyToken,
 	verifyJwtTokenController.verifyIsAdmin],
-    fetchDataController.index);
+    fetchDataController.index,
+	fetchDataController.groupingData);
+
+    app.get('/api/fetch-data-group', 
+    [verifyJwtTokenController.verifyToken,
+	verifyJwtTokenController.verifyIsAdmin],
+	fetchDataController.groupingData);
 
 
 	//User Auth

@@ -1,6 +1,7 @@
 const services = require('../services/services');
 const fs = require('fs');
 const local_data_jds = require('../services/data_jds.json');
+const { response } = require('../helper/helper');
 
 function jumlah_data_sama(local,api){
     if(local.length == api.length){
@@ -95,7 +96,22 @@ module.exports = {
         getData.then(response => {        
             convert(response, successConvert, withoutConvert,res);
         });
+    },
+    groupingData(req,res){
+        let grouped = {};
+        if(local_data_jds.length > 0){
+            grouped = local_data_jds.map(({id,department, product,price_idr}) => ({id,department, product,price_idr})).sort((a,b) => a.price_idr - b.price_idr )
+        }else{
+            getData.then(response => {
+             grouped = response.map(({id,department, product,price}) => ({id,department, product,price})).sort((a,b) => a.price_idr - b.price_idr )
+            })
+        }
+
+        return res.status(200).send({
+            data:grouped
+        });
     }
 
 }
+
 
