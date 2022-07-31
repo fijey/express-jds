@@ -6,7 +6,7 @@ module.exports = {
 
   async getProfile(req, res) {
 
-  const getProfile = await axios.get('http://127.0.0.1:3000/api/user', {
+  const getProfile = await axios.get('https://auth.visualkreatif.com/public/api/user', {
     headers: {
       Authorization: 'Bearer ' + req.user.acessToken,
     }
