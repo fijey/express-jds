@@ -31,7 +31,9 @@ module.exports = {
 						errors: err
 					});
 				}
-				req.nik = decoded.nik;
+				console.log(decoded);
+				req.nik = decoded.result.nik;
+				req.user = decoded.result;
 				next();
 			});
 
@@ -48,26 +50,14 @@ module.exports = {
 	verifyIsAdmin(req, res, next) {
 
 
-		const cari = User.findOne({
-			where: {
-				nik: req.nik
-			}
-		})
-        // cari.then(()=>console.log(cari));
-        .then(user => {
-			if(user.roles != 'admin'){
-				res.status(400).send({
-					auth: false,
-					message: "Error",
-					errors: "Kamu Tidak Memilik Hak Akses"
-				});
-			}
-            next()
-
-		})
-        .catch(err => {
-            console.log(err);
-        })
+	if(req.user.roles != 'admin'){
+		res.status(400).send({
+			auth: false,
+			message: "Error",
+			errors: "Kamu Tidak Memilik Hak Akses"
+		});
+	}
+	next()
 	},
 
 }

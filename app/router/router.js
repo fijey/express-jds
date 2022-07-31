@@ -13,11 +13,6 @@ module.exports = function (app) {
 		res.send("Hello from the root application URL");
 	});
 
-	app.get('api/helo', function(req, res){
-		res.send("Hello from the root application URL");
-	});
-
-
     app.get('/api/get-profile', 
     [verifyJwtTokenController.verifyToken],
     userController.getProfile);
@@ -36,36 +31,13 @@ module.exports = function (app) {
 
 	//User Auth
 	app.post('/api/auth/signup',
-		[verifySignUpController.checkNik,
-		verifySignUpController.validation
-		],
+		// [verifySignUpController.checkNik,
+		// verifySignUpController.validation
+		// ],
+		//middleware node ga dipake karena sudah di handle di auth laravel
 		verifySignController.signup);
 
 	app.post('/api/auth/signin', verifySignController.signin);
 
 
-	// //Status
-	// app.get('/api/status',
-	// 	statusController.list);
-
-	// app.get('/api/status/:id',
-	// 	[verifyJwtTokenController.verifyToken,
-	// 		verifyJwtTokenController.isAdmin
-	// 	],
-	// 	statusController.getById);
-	// app.post('/api/status',
-	// 	[verifyJwtTokenController.verifyToken,
-	// 		verifyJwtTokenController.isAdmin
-	// 	],
-	// 	statusController.add);
-	// app.put('/api/status/:id',
-	// 	[verifyJwtTokenController.verifyToken,
-	// 		verifyJwtTokenController.isAdmin
-	// 	],
-	// 	statusController.update);
-	// app.delete('/api/status/:id',
-	// 	[verifyJwtTokenController.verifyToken,
-	// 		verifyJwtTokenController.isAdmin
-	// 	],
-	// 	statusController.delete);
 }

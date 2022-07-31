@@ -1,88 +1,66 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Helper = require('../helper/helper');
-const User = require('../models').User
+const User = require('../models').User;
+const axios = require('axios');
+const { result } = require('lodash');
 
 module.exports = {
-	signup(req, res) {
+	async signup(req, res) {
         
-        let password = Helper.generatePassword();
-        
-		const signup =  User
-			.create({
-				nik: req.body.nik,
-				roles: req.body.roles,
-				password: bcrypt.hashSync(password, 8)
-			})
-            .then(resp => {
-                res.status(200).send({
-                    status_code: 200,
-                    status_message: "Pendaftaran Akun Pengguna Berhasil",
-                    nik:req.body.nik,
-                    password: password
-                })
-            })
-            .catch(err => {
-                res.status(400).send(Helper.response(400,err,null));
-            })
-
-        
+        const response = await axios.post('https://auth.visualkreatif.com/public/api/register', {
+            nik: req.body.nik,
+            roles: req.body.roles
+        }).then(response => {
+            res.status(200).send({
+                status_code: response.data.status_code,
+                status_message: response.data.status_message,
+                nik:response.data.result.nik,
+                password: response.data.result.password
+            });
+       })
+       .catch(error => {
+            res.status(400).send(Helper.response(400,error.response.data.errors,null));
+       });
 	},
 
-	signin(req, res) {
-		    const cari = User
-			.findOne({
-				where: {
-					nik: req.body.nik,
-				}
-			})
+	async signin(req, res) {
 
-            .then(resp => {
-                if (!resp) {
-                        res.status(404).send({
-                            status_code: 404,
-                            status_message: "Akun Pengguna / NIK Tidak Terdaftar",
-                            nik: req.body.nik,
-                            accessToken: null,
-                        });
-                    return;
+            const response = await axios.post('https://auth.visualkreatif.com/public/api/login', {
+                nik: req.body.nik,
+                password: req.body.password
+            }).then(response => {
+
+                if(response.data.status_code == 200){
+
+                    console.log(response.data.result);
+                    var token = 'Bearer ' + jwt.sign({
+                        result: response.data.result
+                    }, 
+                    "secret",
+                     {
+                    	expiresIn: 86400 //24h expired
+                    });
+
+                    res.status(200).send({
+                        status_code: response.data.status_code,
+                        status_message: response.data.status_message,
+                        accessToken:token,
+                        nik:response.data.result.nik,
+                    });
                 }
-                var passwordIsValid = bcrypt.compareSync(req.body.password, resp.password);
-				if (!passwordIsValid) {
-					res.status(401).send({
-                        status_code: 401,
-                        status_message: "Invalid NIK/Password",
-                        nik: req.body.nik,
-                        accessToken: null,
-					});
-                    return;
-				}
-
-                var token = 'Bearer ' + jwt.sign({
-					nik: resp.nik
-				}, 
-                "secret",
-                 {
-					expiresIn: 86400 //24h expired
-				});
-
-                res.status(200).send({
-                    status_code: 200,
-                    status_message: "Berhasil Login",
-                    nik: req.body.nik,
-                    accessToken: token,
-				});
 
 
-            })
-            .catch(err => {
-                res.status(500).send({
-                    status_code: 500,
-                    status_message: "Request Failed "+err,
-                    nik: req.body.nik,
-                    accessToken: null,				
-                });
-            })
+
+               
+                if (response.data.status_code == 401) {
+                    res.status(response.data.status_code).send(Helper.response(response.data.status_code,response.data.status_message,null));
+                }
+           })
+           .catch(error => {
+            res.status(error.response.status).send(Helper.response(error.response.status,error.response.data.message,null));
+            console.log(error.response);
+           });
             
 	}
 }
