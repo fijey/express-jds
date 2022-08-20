@@ -7,6 +7,7 @@ const { result } = require('lodash');
 
 module.exports = {
 	async signup(req, res) {
+        console.log(req);
         
         const response = await axios.post('https://auth.visualkreatif.com/public/api/register', {
             nik: req.body.nik,

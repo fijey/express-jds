@@ -16,8 +16,8 @@ app.use(express.static("app/public"));
 
 //Set app config
 const title = process.env.TITLE || "Backend-Express";
-const port = process.env.PORT || '8000';
-const baseUrl = process.env.URL || "localhost:" + port || 8000;
+const port = process.env.PORT || '3000';
+const baseUrl = process.env.URL || "http://127.0.0.1:" + port || 3000;
 
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
