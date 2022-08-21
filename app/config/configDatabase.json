@@ -14,9 +14,9 @@
       "dialect": "mysql"
     },
     "production": {
-        "username": "root",
-        "password": "",
-        "database": "express",
+        "username": "u1561271_node_backend",
+        "password": "{nWyv=!E2j(~",
+        "database": "u1561271_node_backend",
         "host": "localhost",
         "dialect": "mysql"
     }
